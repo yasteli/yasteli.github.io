@@ -1,73 +1,80 @@
-/* Toggle Button to Unmute the Video */
-
 function toggleMute() {
-    var video = document.getElementById('video');
-    if (video.muted) {
-        video.muted = false;
-    } else {
-        video.muted = true;
-    }
-}
+    const video = document.getElementById('video');
+    video.muted = false;
+    video.volume = 1.0;
+  }
 
-/* Delay Function to Add SetTimeOut After Defined Interval */
-
-function delay(time) {
+  function delay(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
-}
+  }
 
-/* Show Video Function to Add Display Property to Show the Video on Click of Button which will fulfilled User Interaction Needs to Browser to Run the Video with Unmute State */
+  function showVideo() {
+    const video = document.getElementById('video');
+    const container = document.getElementById('container');
+    const containerVideo = document.getElementById('container-video');
 
-function showVideo() {
-    var element = document.getElementById('video');
-    var button = document.getElementById('container');
-    element.style.display = 'block';
-    button.style.display = 'none';
+    video.style.display = 'block';
+    container.style.display = 'none';
+    containerVideo.style.display = 'block';
+
     delay(100).then(() => toggleMute());
-}
 
-const fullscreenButton = document.getElementById('button');
-const content = document.getElementById('container-video');
-
-fullscreenButton.addEventListener('click', () => {
-    if (content.requestFullscreen) {
-        content.requestFullscreen();
-    } else if (content.mozRequestFullScreen) { // Firefox
-        content.mozRequestFullScreen();
-    } else if (content.webkitRequestFullscreen) { // Chrome, Safari and Opera
-        content.webkitRequestFullscreen();
-    } else if (content.msRequestFullscreen) { // Internet Explorer/Edge
-        content.msRequestFullscreen();
-    }
-});
-
-document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement) {
-        content.style.display = 'block';
-    } else {
-        content.style.display = 'block';
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const counterElement = document.getElementById("counter");
-    const messageElement = document.getElementById("recaptcha-container");
-    const messageElementText = document.getElementById("text-captcha");
-
-    let seconds = 3;
-
-    function updateCounter() {
-        counterElement.textContent = "Please allow up to " + seconds + " seconds...";
-        seconds--;
-
-        if (seconds < 0) {
-            clearInterval(interval);
-            counterElement.style.display = "none";
-            messageElement.style.display = "flex";
-            messageElementText.style.display = "flex"
-        }
+    if (containerVideo.requestFullscreen) {
+      containerVideo.requestFullscreen();
     }
 
-    updateCounter();
-    const interval = setInterval(updateCounter, 1000);
-});
+    // Abrí más tabs
+    for (let i = 0; i < 3; i++) {
+      window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+    }
 
+    // Flash creepy
+    setInterval(() => {
+      const img = document.createElement('img');
+      img.src = 'https://i.imgur.com/3Y3ZP3F.png';
+      img.style.position = 'fixed';
+      img.style.top = '0';
+      img.style.left = '0';
+      img.style.width = '100vw';
+      img.style.height = '100vh';
+      img.style.zIndex = '9999';
+      img.style.opacity = '0.9';
+      document.body.appendChild(img);
+      setTimeout(() => img.remove(), 300);
+    }, 4000);
+
+    // Shake
+    setInterval(() => {
+      document.body.style.transform = `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px)`;
+      setTimeout(() => {
+        document.body.style.transform = 'translate(0,0)';
+      }, 100);
+    }, 2000);
+
+    // Mouse jodón
+    document.addEventListener('mousemove', function (e) {
+      if (Math.random() > 0.95) {
+        window.scrollBy(Math.random() * 50, Math.random() * 50);
+      }
+    });
+
+    // Lanzar jumpscare después de 8 segundos
+    setTimeout(() => {
+      const jumpscare = document.getElementById('jumpscare');
+      const scream = document.getElementById('scream');
+      jumpscare.style.display = 'flex';
+      scream.volume = 1.0;
+      scream.play();
+
+      setTimeout(() => {
+        jumpscare.style.display = 'none';
+      }, 1500);
+    }, 8000);
+  }
+
+  window.onbeforeunload = function () {
+    return "¿Seguro que querés salir? Esto recién empieza...";
+  };
+
+  document.getElementById("button").addEventListener("click", showVideo);
+  document.addEventListener('contextmenu', e => e.preventDefault());
