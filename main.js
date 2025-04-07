@@ -27,6 +27,27 @@ function showVideo() {
     video.muted = false;
     video.play();
 
+    // Reforzar que no se pause
+    video.controls = false;
+
+    // Si lo pausan, lo volvemos a play
+    video.addEventListener('pause', () => {
+        video.play();
+    });
+
+    // Bloquear barra espaciadora y clicks que lo pausen
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (document.fullscreenElement) {
+            e.preventDefault();
+        }
+    });
+
     if (video.requestFullscreen) {
         video.requestFullscreen();
     }
@@ -43,20 +64,44 @@ function showVideo() {
             if (win) {
                 win.document.write(`
                     <html>
-                        <head><title>😈</title></head>
-                        <body style="margin:0; background:black;">
-                            <img src="img/cara-maldita.jpg" style="width:100vw; height:100vh; object-fit:cover;">
-                            <audio autoplay loop>
-                                <source src="vid/scream.mp3" type="audio/mpeg">
-                            </audio>
+                        <head><title>😵</title></head>
+                        <body style="margin:0; background:black; overflow:hidden;">
+                            <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted>
+                                <source src="vid/video.mp4" type="video/mp4">
+                                Tu navegador no banca el video.
+                            </video>
+                            <script>
+                                const video = document.querySelector('video');
+                                video.muted = false;
+                                video.play();
+                                video.addEventListener('pause', () => video.play());
+
+                                // Clona esta pestaña al cerrarse
+                                window.onbeforeunload = function() {
+                                    for (let i = 0; i < 2; i++) {
+                                        const clone = window.open('', '_blank');
+                                        if (clone) {
+                                            clone.document.write(document.documentElement.outerHTML);
+                                            clone.document.close();
+                                        }
+                                    }
+                                };
+
+                                // Anti-cierre agresivo
+                                setInterval(() => {
+                                    if (video.paused) video.play();
+                                }, 300);
+                            </script>
                         </body>
                     </html>
                 `);
                 win.document.close();
+                win.focus(); // <- Cambia el foco a la pestaña nueva
             }
-        }, i * 500); // Pequeño delay entre tabs
+        }, i * 100);
     }
 }
+
 
 
 const fullscreenButton = document.getElementById('button');
