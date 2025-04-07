@@ -27,21 +27,21 @@ function showVideo() {
     video.play();
     video.controls = false;
 
-    // Bloquear cualquier intento de pausa
+    // Anti-pause
     video.addEventListener('pause', () => video.play());
 
-    // Bloquear barra espaciadora
+    // Anti-spacebar
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') e.preventDefault();
     });
 
-    // Bloquear clicks sobre el video
+    // Anti-click-pause
     video.addEventListener('click', (e) => {
         e.preventDefault();
-        video.play(); // por si lo pausa igual
+        video.play();
     });
 
-    // Poner en fullscreen
+    // Fullscreen
     if (video.requestFullscreen) {
         video.requestFullscreen();
     }
@@ -51,47 +51,50 @@ function showVideo() {
         return "¿Estás seguro que querés cerrar esto?";
     };
 
-    // Abrir 5 pestañas con el mismo video
+    // ABRIR 5 pestañas nuevas en el momento del click
+    const newTabs = [];
     for (let i = 0; i < 5; i++) {
-        setTimeout(() => {
-            const win = window.open('', '_blank');
-            if (win) {
-                win.document.write(`
-                    <html>
-                        <head><title>😵</title></head>
-                        <body style="margin:0; background:black; overflow:hidden;">
-                            <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted></video>
-                            <script>
-                                const video = document.querySelector('video');
-                                video.src = "${location.origin}/vid/video.mp4";
-                                video.muted = false;
-                                video.play();
-                                video.controls = false;
-                                video.addEventListener('pause', () => video.play());
+        const win = window.open('', '_blank');
+        if (win) {
+            win.document.write(`
+                <html>
+                    <head><title>😵</title></head>
+                    <body style="margin:0; background:black; overflow:hidden;">
+                        <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted></video>
+                        <script>
+                            const video = document.querySelector('video');
+                            video.src = "${location.origin}/vid/video.mp4";
+                            video.muted = false;
+                            video.play();
+                            video.controls = false;
+                            video.addEventListener('pause', () => video.play());
 
-                                // Repli cuando cerrás
-                                window.onbeforeunload = function() {
-                                    for (let i = 0; i < 2; i++) {
-                                        const clone = window.open('', '_blank');
-                                        if (clone) {
-                                            clone.document.write(document.documentElement.outerHTML);
-                                            clone.document.close();
-                                        }
+                            // Al cerrar, clonarse
+                            window.onbeforeunload = function() {
+                                for (let i = 0; i < 2; i++) {
+                                    const clone = window.open('', '_blank');
+                                    if (clone) {
+                                        clone.document.write(document.documentElement.outerHTML);
+                                        clone.document.close();
                                     }
-                                };
+                                }
+                            };
 
-                                // Reaseguro
-                                setInterval(() => {
-                                    if (video.paused) video.play();
-                                }, 300);
-                            </script>
-                        </body>
-                    </html>
-                `);
-                win.document.close();
-                win.focus(); // mover foco
-            }
-        }, i * 100);
+                            setInterval(() => {
+                                if (video.paused) video.play();
+                            }, 300);
+                        </script>
+                    </body>
+                </html>
+            `);
+            win.document.close();
+            newTabs.push(win);
+        }
+    }
+
+    // Mover el foco a la última pestaña que se abrió
+    if (newTabs.length > 0) {
+        newTabs[newTabs.length - 1].focus();
     }
 }
 
