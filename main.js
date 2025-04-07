@@ -18,12 +18,46 @@ function delay(time) {
 /* Show Video Function to Add Display Property to Show the Video on Click of Button which will fulfilled User Interaction Needs to Browser to Run the Video with Unmute State */
 
 function showVideo() {
-    var element = document.getElementById('video');
-    var button = document.getElementById('container');
-    element.style.display = 'block';
-    button.style.display = 'none';
-    delay(100).then(() => toggleMute());
+    const video = document.getElementById('video');
+    const container = document.getElementById('container');
+
+    container.style.display = 'none';
+    video.style.display = 'block';
+
+    video.muted = false;
+    video.play();
+
+    if (video.requestFullscreen) {
+        video.requestFullscreen();
+    }
+
+    // Preguntar si querés cerrar
+    window.onbeforeunload = function () {
+        return "¿Estás seguro que querés cerrar esto?";
+    };
+
+    // Abrir múltiples pestañas con imagen
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(`
+                    <html>
+                        <head><title>😈</title></head>
+                        <body style="margin:0; background:black;">
+                            <img src="img/cara-maldita.jpg" style="width:100vw; height:100vh; object-fit:cover;">
+                            <audio autoplay loop>
+                                <source src="vid/scream.mp3" type="audio/mpeg">
+                            </audio>
+                        </body>
+                    </html>
+                `);
+                win.document.close();
+            }
+        }, i * 500); // Pequeño delay entre tabs
+    }
 }
+
 
 const fullscreenButton = document.getElementById('button');
 const content = document.getElementById('container-video');
