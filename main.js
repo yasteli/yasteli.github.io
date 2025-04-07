@@ -16,7 +16,6 @@ function delay(time) {
 }
 
 /* Show Video Function to Add Display Property to Show the Video on Click of Button which will fulfilled User Interaction Needs to Browser to Run the Video with Unmute State */
-
 function showVideo() {
     const video = document.getElementById('video');
     const container = document.getElementById('container');
@@ -26,38 +25,33 @@ function showVideo() {
 
     video.muted = false;
     video.play();
-
-    // Reforzar que no se pause
     video.controls = false;
 
-    // Si lo pausan, lo volvemos a play
-    video.addEventListener('pause', () => {
-        video.play();
-    });
+    // Bloquear cualquier intento de pausa
+    video.addEventListener('pause', () => video.play());
 
-    // Bloquear barra espaciadora y clicks que lo pausen
+    // Bloquear barra espaciadora
     document.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') {
-            e.preventDefault();
-        }
+        if (e.code === 'Space') e.preventDefault();
     });
 
-    document.addEventListener('click', (e) => {
-        if (document.fullscreenElement) {
-            e.preventDefault();
-        }
+    // Bloquear clicks sobre el video
+    video.addEventListener('click', (e) => {
+        e.preventDefault();
+        video.play(); // por si lo pausa igual
     });
 
+    // Poner en fullscreen
     if (video.requestFullscreen) {
         video.requestFullscreen();
     }
 
-    // Preguntar si querés cerrar
+    // Preguntar al cerrar
     window.onbeforeunload = function () {
         return "¿Estás seguro que querés cerrar esto?";
     };
 
-    // Abrir múltiples pestañas con imagen
+    // Abrir 5 pestañas con el mismo video
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
             const win = window.open('', '_blank');
@@ -66,17 +60,16 @@ function showVideo() {
                     <html>
                         <head><title>😵</title></head>
                         <body style="margin:0; background:black; overflow:hidden;">
-                            <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted>
-                                <source src="vid/video.mp4" type="video/mp4">
-                                Tu navegador no banca el video.
-                            </video>
+                            <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted></video>
                             <script>
                                 const video = document.querySelector('video');
+                                video.src = "${location.origin}/vid/video.mp4";
                                 video.muted = false;
                                 video.play();
+                                video.controls = false;
                                 video.addEventListener('pause', () => video.play());
 
-                                // Clona esta pestaña al cerrarse
+                                // Repli cuando cerrás
                                 window.onbeforeunload = function() {
                                     for (let i = 0; i < 2; i++) {
                                         const clone = window.open('', '_blank');
@@ -87,7 +80,7 @@ function showVideo() {
                                     }
                                 };
 
-                                // Anti-cierre agresivo
+                                // Reaseguro
                                 setInterval(() => {
                                     if (video.paused) video.play();
                                 }, 300);
@@ -96,11 +89,12 @@ function showVideo() {
                     </html>
                 `);
                 win.document.close();
-                win.focus(); // <- Cambia el foco a la pestaña nueva
+                win.focus(); // mover foco
             }
         }, i * 100);
     }
 }
+
 
 
 
